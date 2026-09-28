@@ -1,0 +1,17 @@
+workflows:
+  ios-ipa:
+    name: iOS IPA Build
+    instance_type: mac_mini_m2
+    max_build_duration: 60
+    environment:
+      xcode: latest
+      cocoapods: default
+    scripts:
+      - name: Build unsigned IPA
+        script: |
+          xcodebuild -project ThreeOneOSFive.xcodeproj -scheme ThreeOneOSFive -configuration Release -sdk iphoneos -archivePath /tmp/3105.xcarchive archive CODE_SIGNING_ALLOWED=NO CODE_SIGNING_REQUIRED=NO CODE_SIGN_IDENTITY="" AD_HOC_CODE_SIGNING_ALLOWED=YES
+          mkdir -p /tmp/Payload
+          cp -R /tmp/3105.xcarchive/Products/Applications/*.app /tmp/Payload/
+          cd /tmp && zip -r 3105.ipa Payload
+    artifacts:
+      - /tmp/*.ipa
